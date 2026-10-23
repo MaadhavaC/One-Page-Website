@@ -1,0 +1,330 @@
+<title>Orchard Lane Apples</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  /* Layout: single column, left-aligned hero, variety rows as a harvest ledger (sweet/tart bars + pick window), order form beside a live box summary. */
+  :root {
+    --bg: #f6f8f3;
+    --surface: #ffffff;
+    --fg: #1d2a1f;
+    --muted: #5b6a5d;
+    --line: #dde5d8;
+    --apple: #c42b2b;
+    --apple-ink: #ffffff;
+    --leaf: #2f6b3a;
+    --leaf-soft: #e1eddc;
+    --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111a13; --surface: #182319; --fg: #e9f0e6; --muted: #9fb0a1; --line: #2a3a2d;
+      --apple: #e8504d; --apple-ink: #1a0c0c; --leaf: #8cc796; --leaf-soft: #213526;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111a13; --surface: #182319; --fg: #e9f0e6; --muted: #9fb0a1; --line: #2a3a2d;
+    --apple: #e8504d; --apple-ink: #1a0c0c; --leaf: #8cc796; --leaf-soft: #213526;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font: 16px/1.6 var(--font-body);
+    padding-block: 0;
+  }
+  .wrap {
+    max-width: 1000px; margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.08; margin: 0; letter-spacing: -0.02em; }
+  p { margin: 0; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--apple); outline-offset: 2px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; flex-wrap: wrap; }
+  .brand { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; text-decoration: none; letter-spacing: -0.02em; }
+  .brand span { color: var(--apple); }
+  .top nav { display: flex; gap: 20px; font-size: .95rem; }
+  .top nav a { color: var(--muted); text-decoration: none; }
+  .top nav a:hover { color: var(--apple); }
+
+  .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; padding-block: 48px 64px; }
+  .hero > * { min-width: 0; }
+  .kicker { font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--leaf); margin-bottom: 14px; }
+  h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); font-weight: 800; }
+  h1 em { font-style: normal; color: var(--apple); }
+  .lede { margin-top: 20px; max-width: 46ch; color: var(--muted); font-size: 1.1rem; }
+  .btn { display: inline-block; margin-top: 28px; background: var(--apple); color: var(--apple-ink); font: 700 1rem var(--font-body); padding: 14px 26px; border: 0; border-radius: 8px; text-decoration: none; cursor: pointer; }
+  .btn:hover { filter: brightness(.92); }
+  .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); margin-top: 0; padding: 10px 16px; font-size: .9rem; }
+
+  .apple-art { width: 100%; max-width: 340px; justify-self: center; display: block; }
+
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-block: 1px solid var(--line); }
+  .facts div { padding: 20px 16px; border-left: 1px solid var(--line); min-width: 0; }
+  .facts div:first-child { border-left: 0; padding-left: 0; }
+  .facts b { display: block; font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .facts span { color: var(--muted); font-size: .9rem; }
+
+  section { padding-block: 64px 0; }
+  h2 { font-size: clamp(1.8rem, 4.5vw, 2.5rem); font-weight: 800; }
+  .sub { color: var(--muted); margin-top: 10px; max-width: 56ch; }
+
+  .ledger { margin-top: 28px; border-top: 2px solid var(--fg); }
+  .row { display: grid; grid-template-columns: 1.1fr 1.5fr 1fr auto; gap: 24px; align-items: center; padding-block: 22px; border-bottom: 1px solid var(--line); }
+  .row > * { min-width: 0; }
+  .row h3 { font-size: 1.4rem; font-weight: 800; }
+  .row .desc { color: var(--muted); font-size: .92rem; margin-top: 4px; }
+  .meter { display: grid; gap: 6px; font-size: .78rem; color: var(--muted); }
+  .meter div { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 8px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--leaf-soft); position: relative; overflow: hidden; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--leaf); border-radius: 3px; }
+  .bar.tart i { background: var(--apple); }
+  .pick { font-size: .85rem; color: var(--muted); }
+  .pick b { display: block; color: var(--fg); font-size: .95rem; }
+  .price { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .price small { display: block; font: 400 .75rem var(--font-body); color: var(--muted); }
+
+  .promise { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 28px; }
+  .promise > div { min-width: 0; }
+  .promise h3 { font-size: 1.15rem; margin-bottom: 6px; }
+  .promise p { color: var(--muted); font-size: .95rem; }
+
+  .order { display: grid; grid-template-columns: 1.2fr .8fr; gap: 32px; margin-top: 28px; align-items: start; }
+  .order > * { min-width: 0; }
+  form, .summary { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  form { display: grid; gap: 16px; }
+  label { display: grid; gap: 6px; font-size: .88rem; font-weight: 700; }
+  input, select, textarea { font: 400 1rem var(--font-body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; width: 100%; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two > * { min-width: 0; }
+  .summary h3 { font-size: 1.2rem; margin-bottom: 14px; }
+  .summary dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; font-variant-numeric: tabular-nums; }
+  .summary dt { color: var(--muted); }
+  .summary dd { margin: 0; text-align: right; font-weight: 500; }
+  .summary .total { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; font-weight: 700; font-size: 1.2rem; }
+  .summary .total + dd { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; font: 800 1.4rem var(--font-display); }
+  .note { margin-top: 14px; font-size: .85rem; color: var(--muted); }
+  .confirm { margin-top: 18px; padding: 16px; border-radius: 8px; background: var(--leaf-soft); }
+  .confirm pre { margin: 10px 0 12px; white-space: pre-wrap; word-break: break-word; font: .85rem/1.5 var(--font-body); }
+  .confirm .addr { font-weight: 700; user-select: all; }
+
+  footer { margin-top: 72px; padding-block: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; padding-block: 24px 48px; }
+    .apple-art { max-width: 220px; justify-self: start; order: -1; }
+    .row { grid-template-columns: 1fr auto; gap: 14px 16px; }
+    .row .meter, .row .pick { grid-column: 1 / -1; }
+    .row .price { grid-row: 1; grid-column: 2; }
+    .promise, .order { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .facts { grid-template-columns: 1fr; }
+    .facts div { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
+    .facts div:first-child { border-top: 0; }
+    .two { grid-template-columns: 1fr; }
+    .top nav { gap: 14px; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#top">Orchard <span>Lane</span></a>
+    <nav>
+      <a href="#varieties">Varieties</a>
+      <a href="#promise">Our promise</a>
+      <a href="#order">Order</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <p class="kicker">Welcome to Orchard Lane</p>
+        <h1>Picked <em>this week</em>. At your door within 48 hours.</h1>
+        <p class="lede">We grow Honeycrisp, Granny Smith, Gala and Fuji on one south-facing hillside. Order a 5 kg box and we pick it for you, pack it the same day and send it straight from the orchard. No wax, no cold storage, no middlemen.</p>
+        <a class="btn" href="#order">Choose your apples</a>
+      </div>
+      <svg class="apple-art" viewBox="0 0 200 220" role="img" aria-label="Illustration of a red apple with a green leaf">
+        <path d="M100 58c-14-16-48-16-62 12-16 32-2 88 26 112 14 12 26 8 36 4 10 4 22 8 36-4 28-24 42-80 26-112-14-28-48-28-62-12z" fill="var(--apple)"/>
+        <path d="M100 58c2-14 6-28 16-40" stroke="var(--fg)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M116 30c18-18 44-14 52-8-6 20-30 32-52 8z" fill="var(--leaf)"/>
+        <path d="M58 92c-6 14-6 34 0 48" stroke="var(--apple-ink)" stroke-opacity=".35" stroke-width="7" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="facts">
+      <div><b>3rd</b><span>generation on the same 14 acres</span></div>
+      <div><b>48 hrs</b><span>from tree to your doorstep</span></div>
+      <div><b>0</b><span>post-harvest wax coatings</span></div>
+    </div>
+
+    <section id="varieties">
+      <h2>What's in the orchard</h2>
+      <p class="sub">Each box is 5 kg, about 25 to 30 apples. Mix varieties by ordering more than one box.</p>
+      <div class="ledger">
+        <article class="row">
+          <div><h3>Honeycrisp</h3><p class="desc">Loud snap, juicy, sweet with a tart edge. Best fresh.</p></div>
+          <div class="meter" aria-label="Sweetness 8 of 10, tartness 4 of 10">
+            <div>Sweet<span class="bar"><i style="width:80%"></i></span></div>
+            <div>Tart<span class="bar tart"><i style="width:40%"></i></span></div>
+          </div>
+          <p class="pick"><b>Sep 15 – Oct 5</b>pick window</p>
+          <p class="price">£28<small>per 5 kg box</small></p>
+        </article>
+        <article class="row">
+          <div><h3>Granny Smith</h3><p class="desc">Hard, bright and sharp. The pie and cider apple.</p></div>
+          <div class="meter" aria-label="Sweetness 3 of 10, tartness 9 of 10">
+            <div>Sweet<span class="bar"><i style="width:30%"></i></span></div>
+            <div>Tart<span class="bar tart"><i style="width:90%"></i></span></div>
+          </div>
+          <p class="pick"><b>Oct 20 – Nov 10</b>pick window</p>
+          <p class="price">£22<small>per 5 kg box</small></p>
+        </article>
+        <article class="row">
+          <div><h3>Gala</h3><p class="desc">Mild and floral with thin skin. Easy for lunchboxes.</p></div>
+          <div class="meter" aria-label="Sweetness 7 of 10, tartness 2 of 10">
+            <div>Sweet<span class="bar"><i style="width:70%"></i></span></div>
+            <div>Tart<span class="bar tart"><i style="width:20%"></i></span></div>
+          </div>
+          <p class="pick"><b>Aug 25 – Sep 15</b>pick window</p>
+          <p class="price">£20<small>per 5 kg box</small></p>
+        </article>
+        <article class="row">
+          <div><h3>Fuji</h3><p class="desc">Dense and honeyed. Stores for weeks in the fridge drawer.</p></div>
+          <div class="meter" aria-label="Sweetness 9 of 10, tartness 3 of 10">
+            <div>Sweet<span class="bar"><i style="width:90%"></i></span></div>
+            <div>Tart<span class="bar tart"><i style="width:30%"></i></span></div>
+          </div>
+          <p class="pick"><b>Oct 10 – Nov 1</b>pick window</p>
+          <p class="price">£24<small>per 5 kg box</small></p>
+        </article>
+      </div>
+    </section>
+
+    <section id="promise">
+      <h2>Our promise</h2>
+      <div class="promise">
+        <div><h3>Picked to order</h3><p>We pick Monday to Wednesday and pack the same day, so your apples never sit in a warehouse.</p></div>
+        <div><h3>Free shipping over £50</h3><p>Two boxes or more ship free in mainland UK. One box ships for £9.</p></div>
+        <div><h3>Bruised? We replace it</h3><p>If anything arrives damaged, send us a photo and we'll refund or re-ship the box.</p></div>
+      </div>
+    </section>
+
+    <section id="order">
+      <h2>Order your box</h2>
+      <p class="sub">Choose your apples and we'll confirm availability and shipping by email.</p>
+      <div class="order">
+        <form id="orderForm" novalidate>
+          <div class="two">
+            <label for="name">Name<input id="name" name="name" autocomplete="name" required></label>
+            <label for="email">Email<input id="email" name="email" type="email" autocomplete="email" required></label>
+          </div>
+          <div class="two">
+            <label for="variety">Variety
+              <select id="variety" name="variety">
+                <option value="Honeycrisp|28">Honeycrisp, £28</option>
+                <option value="Granny Smith|22">Granny Smith, £22</option>
+                <option value="Gala|20">Gala, £20</option>
+                <option value="Fuji|24">Fuji, £24</option>
+              </select>
+            </label>
+            <label for="qty">Boxes (5 kg each)<input id="qty" name="qty" type="number" min="1" max="20" value="2" required></label>
+          </div>
+          <label for="address">Delivery address<textarea id="address" name="address" rows="3" autocomplete="street-address" required></textarea></label>
+          <button class="btn" type="submit" style="margin-top:0">Review my order</button>
+          <p id="formError" class="note" role="alert" hidden></p>
+        </form>
+
+        <aside class="summary" aria-live="polite">
+          <h3>Your box</h3>
+          <dl>
+            <dt id="sLine">2 × Honeycrisp</dt><dd id="sSub">£56.00</dd>
+            <dt>Shipping</dt><dd id="sShip">Free</dd>
+            <dt class="total">Total</dt><dd id="sTotal">£56.00</dd>
+          </dl>
+          <p class="note">About <span id="sCount">50 to 60</span> apples, <span id="sKg">10</span> kg.</p>
+          <div class="confirm" id="confirm" hidden>
+            <b>Almost done.</b> This page can't send email itself. Copy your order and send it to
+            <span class="addr">hello@orchardlane.example</span>.
+            <pre id="orderText"></pre>
+            <button class="btn ghost" type="button" id="copyBtn">Copy order</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Orchard Lane Apples, 14 acres, one hillside.</span>
+    <span>hello@orchardlane.example</span>
+  </footer>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const money = n => '£' + n.toFixed(2);
+  let current = '';
+
+  function calc() {
+    const [name, price] = $('variety').value.split('|');
+    const qty = Math.max(0, Math.floor(Number($('qty').value) || 0));
+    const sub = Number(price) * qty;
+    const ship = sub === 0 ? 0 : sub >= 50 ? 0 : 9;
+    return { name, qty, sub, ship, total: sub + ship };
+  }
+
+  function render() {
+    const c = calc();
+    $('sLine').textContent = c.qty + ' × ' + c.name;
+    $('sSub').textContent = money(c.sub);
+    $('sShip').textContent = c.ship ? money(c.ship) : 'Free';
+    $('sTotal').textContent = money(c.total);
+    $('sCount').textContent = (c.qty * 25) + ' to ' + (c.qty * 30);
+    $('sKg').textContent = c.qty * 5;
+  }
+  $('variety').addEventListener('change', render);
+  $('qty').addEventListener('input', render);
+  render();
+
+  $('orderForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const err = $('formError');
+    const c = calc();
+    const missing = ['name', 'email', 'address'].filter(id => !$(id).value.trim());
+    if (missing.length || c.qty < 1 || !$('email').checkValidity()) {
+      err.hidden = false;
+      err.textContent = 'Please fill in your name, a valid email, your delivery address and at least one box.';
+      return;
+    }
+    err.hidden = true;
+    current = [
+      'Order for ' + $('name').value.trim() + ' <' + $('email').value.trim() + '>',
+      c.qty + ' × ' + c.name + ' (5 kg box)',
+      'Shipping: ' + (c.ship ? money(c.ship) : 'Free'),
+      'Total: ' + money(c.total),
+      'Deliver to:', $('address').value.trim()
+    ].join('\n');
+    $('orderText').textContent = current;
+    $('confirm').hidden = false;
+    $('confirm').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+
+  $('copyBtn').addEventListener('click', async () => {
+    const btn = $('copyBtn');
+    try {
+      await navigator.clipboard.writeText(current);
+      btn.textContent = 'Copied';
+    } catch (_) {
+      const r = document.createRange();
+      r.selectNodeContents($('orderText'));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = 'Selected, press copy';
+    }
+  });
+</script>
